@@ -1,0 +1,41 @@
+{
+	"baseUrl": "http://192.168.100.8",
+	"ignoreTls": true,
+	"defaultTimeoutMs": 6000,
+	"steps": [
+		{
+			"name": "connectivity-check",
+			"method": "GET",
+			"path": "/"
+		},
+		{
+			"name": "example-login",
+			"method": "POST",
+			"path": "/am",
+			"headers": { "Content-Type": "application/json" },
+			"json": {
+				"actionType": 1,
+				"valueType": 3,
+				"path": "/Device/Config/Name"
+			},
+			"save": {
+				"lastName": "body.value",
+				"cookie": "cookie"
+			}
+		},
+		{
+			"name": "example-read-power",
+			"method": "POST",
+			"path": "/am",
+			"headers": { "Content-Type": "application/json" },
+			"json": {
+				"actionType": 1,
+				"valueType": 0,
+				"path": "/Device/ReadOnly/Power/State"
+			},
+			"save": {
+				"powerState": "body.value"
+			}
+		}
+	]
+}

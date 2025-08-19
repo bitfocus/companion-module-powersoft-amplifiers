@@ -1,0 +1,11 @@
+node_modules/
+package-lock.json
+/pkg
+/*.tgz
+/dist
+DEBUG-*
+/.yarn/cache
+/.yarn/unplugged
+/.yarn/install-state.gz
+/.idea
+.DS_Store

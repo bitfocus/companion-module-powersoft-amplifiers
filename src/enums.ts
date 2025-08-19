@@ -1,0 +1,63 @@
+// Enums and type mappings for Powersoft API (from docs/README.md)
+
+// Action.Type
+export enum ActionType {
+	READ = 10,
+	READ_TMP = 15,
+	WRITE = 20,
+	WRITE_TMP = 25,
+}
+
+// Value.Type
+export enum ValueType {
+	STRING = 10,
+	FLOAT = 20,
+	INT = 30,
+	BOOL = 40,
+	FLOATARRAY = 50,
+	UINT = 60,
+}
+
+// DeviceManagement.Type
+export enum DeviceManagementType {
+	SHUTDOWN = 10,
+	REBOOT = 20,
+	FACTORY_RESET = 30,
+	BLINK = 40,
+	BLINK_OFF = 41,
+	STANDBY_ON = 50,
+	STANDBY_OFF = 51,
+}
+
+// SpecialAction.Type
+export enum SpecialActionType {
+	LOGIN = 10,
+	LOGOUT = 20,
+	COPY = 30,
+	PRESET_MANAGEMENT = 50,
+	NETWORKING_MANAGEMENT = 70,
+	NETWORK_STATUS = 75,
+	DEVICE_MANAGEMENT = 90,
+	LOCK_MANAGEMENT = 200,
+	SET_TIME = 300,
+	GET_LIVE_IMPEDANCE = 400,
+	RESET_LIVE_IMPEDANCE = 410,
+	GET_LIST_SP = 500,
+	LOAD_SP = 510,
+	REMOVE_SP = 520,
+	COPY_SP = 530,
+	LOCK_SP = 540,
+	INFO_SP = 550,
+	SET_BRIDGE_MODE = 580,
+	GET_LIVE_BUFFERS = 600,
+	GET_DISCOVERY = 610,
+	RESET_LIVE = 700,
+	ARM_PLAY = 710,
+	GET_LIST_PLAY = 711,
+	REMOVE_PLAY = 712,
+	CALIBRATE_CURRENT = 800,
+	READ_AUDINATE_INFO = 810,
+	READ_AUDINATE_FIRMWARE = 811,
+	LOAD_AUDINATE_FIRMWARE = 812,
+	SET_AUDINATE = 813,
+}
