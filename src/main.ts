@@ -28,11 +28,16 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	async init(config: ModuleConfig): Promise<void> {
 		this.config = config
 		this.clearIntervals()
-		this.updateStatus(InstanceStatus.Ok)
+		// Always register UI elements
 		this.updateActions()
 		this.updateFeedbacks()
 		this.updateVariableDefinitions()
 		this.updatePresets()
+		// If config is not ready, set BadConfig and skip network/polling
+		if (!this.isConfigReady()) {
+			this.updateStatus(InstanceStatus.BadConfig, 'No device configured. Set Host or Devices IPs to start.')
+			return
+		}
 		// Seed state immediately so feedbacks/variables reflect current device state ASAP
 		await this.pollDeviceStatus()
 		UpdateVariables(this)
@@ -52,6 +57,10 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		this.updateFeedbacks()
 		this.updateVariableDefinitions()
 		this.updatePresets()
+		if (!this.isConfigReady()) {
+			this.updateStatus(InstanceStatus.BadConfig, 'No device configured. Set Host or Devices IPs to start.')
+			return
+		}
 		await this.pollDeviceStatus()
 		UpdateVariables(this)
 		this.checkFeedbacks()
@@ -85,6 +94,12 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		this.setPresetDefinitions(presets as any)
 	}
 
+	private isConfigReady(): boolean {
+		const hostOk = typeof this.config?.host === 'string' && this.config.host.trim().length > 0
+		const devCsvOk = typeof (this.config as any)?.devicesCsv === 'string' && (this.config as any).devicesCsv.trim().length > 0
+		return hostOk || devCsvOk
+	}
+
 	clearIntervals(): void {
 		if (this.pollingInterval) clearInterval(this.pollingInterval)
 		if (this.variableUpdateInterval) clearInterval(this.variableUpdateInterval)
@@ -97,6 +112,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	startPolling(): void {
 		this.clearIntervals()
 		this.debugTick = 0
+		if (!this.isConfigReady()) {
+			// Keep module in BadConfig until user sets Host/Devices
+			this.updateStatus(InstanceStatus.BadConfig, 'No device configured. Set Host or Devices IPs to start.')
+			return
+		}
 		// Kick off an immediate poll rather than waiting for the first interval tick
 		void this.pollDeviceStatus()
 		if (this.config.enableUdpFeedback) {
