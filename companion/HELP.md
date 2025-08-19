@@ -1,75 +1,71 @@
-## Powersoft Amplifier
+## Powersoft Amplifiers
 
-# companion-module-powersoft-amplifier
-
-This module allows you to control and monitor Powersoft amplifiers via their network API.
+Control and monitor Powersoft amplifiers via the network API. Supports single or multiple devices, channel mute/gain control, power control, and real-time feedback.
 
 ## Configuration
 
-### Network Settings
+- **Mode** (`mode`): Single device or Multiple devices.
+  - Single: set a single Host/Port.
+  - Multiple: leave Host/Port empty and fill Devices IPs list.
+- **Amplifier Hostname/IP** (`host`): Used in Single mode.
+- **Port** (`port`): Default 80.
+- **Polling Interval (ms)** (`pollingInterval`): Default 1000ms.
+- **Devices IPs** (`devicesCsv`): In Multi mode, comma or newline separated list of device IPs.
+- **Maximum Number of Channels** (`maxChannels`): Default 8.
+- **Decimal Places** (`decimalPlaces`): Default 3 (formatting for variables/labels).
+- **Power/Standby Parameter Path (override)** (`powerPath`): Optional manual path override.
+- **UDP feedback (second API)**
+  - Enable UDP feedback polling (`enableUdpFeedback`): Reads power/mutes/alarms via UDP 1234.
+  - UDP Device Port (`udpPort`): Default 1234.
+  - UDP Poll Interval (`udpPollInterval`): Default 1000ms.
+  - Force answer_port=0 (`udpAnswerPortZero`): For firmware requiring 0.
 
-- **Amplifier IP**: The IP address of your Powersoft amplifier
-- **Port**: The port for the API (default: 80 for HTTP, 443 for HTTPS)
-- **Update Frequency**: How often to poll the device for status updates (in milliseconds)
+Notes:
+- HTTPS, username, password options exist but are hidden/not required in typical setups.
 
-### Authentication
+## Actions
 
-- **Username**: Authentication username (default: admin)
-- **Password**: Authentication password (if required)
+- **Power**
+  - Power On / Power Off / Toggle Power
+- **Channel Mute**
+  - Mute Channel / Unmute Channel / Toggle Mute Channel
+- **Channel Gain**
+  - Set Channel Gain (absolute, dB)
+  - Adjust Channel Gain (relative, ±dB)
+- **System (placeholders)**
+  - Reset Protection (per channel or all) – path to be finalized
+  - Reset Peak Hold – path to be finalized
 
-## Available Actions
+## Presets
 
-### Power Control
+- **Per-channel Mute Toggle**: For each channel `CHx`
+  - Default: label `UNMUTED`, green background
+  - When muted (feedback driven): label `MUTED`, red background
+- **Gain Up/Down**: Relative +1 dB / −1 dB.
+- **Clip Indicator**: Highlights when channel is clipping (if supported by device).
+- **Power**: On / Off / Toggle.
+- **Maintenance**: Reset Protection, Reset Peak Hold (placeholders).
 
-- Power On
-- Power Off
-- Toggle Power
+## Feedbacks
 
-### Channel Control
+- **Power State** (`powerState`)
+- **Channel Mute State** (`channelMute`) – drives preset color and label
+- Optional, if supported by device/paths:
+  - **Channel Clip** (`channelClip`)
+  - **Channel Signal Present** (`channelSignal`)
+  - **Channel Temperature Warning/Critical** (`channelTempWarning` / `channelTempCritical`)
+  - **Channel Impedance Warning** (`channelImpedanceWarning`)
+- **Device Fault** (`deviceFault`)
 
-- Mute/Unmute Channel
-- Set Channel Gain
-- Select Preset
+## Variables (selection)
 
-### System
-
-- Reboot Device
-- Factory Reset (use with caution)
-
-## Available Variables
-
-### System
-
-- Device Model
-- Firmware Version
-- IP Address
-- Temperature
-- Fan Speed
-- Uptime
-
-### Channel Status
-
-- Channel Name
-- Mute Status
-- Gain Level
-- Signal Present
-- Clip Status
-- Temperature
-- Load Impedance
-
-## Available Feedback
-
-- Power Status
-- Channel Mute Status
-- Clip Detection
-- Signal Present
-- Temperature Warning
-- Fault Status
+- Per-channel: mute, gain, signal present, clip, temperature, load impedance
+- Device: power state, fault state
 
 ## Troubleshooting
 
-- Ensure your amplifier is connected to the network
-- Verify the IP address is correct and reachable
-- Check that the correct port is being used
-- Verify authentication credentials if required by your device
-- Check the module logs in Companion for any error messages
+- Verify amplifier IP(s) and network routing.
+- Ensure the device API/port is reachable (default HTTP 80).
+- If using UDP feedback, confirm UDP 1234 is allowed and reachable.
+- Adjust polling intervals if status feels sluggish or too chatty.
+- Check Companion module logs for errors; ensure correct parameter paths when overriding.
