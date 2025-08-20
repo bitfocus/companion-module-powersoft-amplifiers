@@ -23,6 +23,9 @@ Control and monitor Powersoft amplifiers via the network API. Supports single or
 Notes:
 - HTTPS, username, password options exist but are hidden/not required in typical setups.
 
+Compatibility:
+- This module has been tested with Powersoft Ottocanali series amplifiers. Other series may work, but paths and features can vary by model and firmware.
+
 ## Actions
 
 - **Power**
@@ -32,9 +35,11 @@ Notes:
 - **Channel Gain**
   - Set Channel Gain (absolute, dB)
   - Adjust Channel Gain (relative, ±dB)
-- **System (placeholders)**
-  - Reset Protection (per channel or all) – path to be finalized
-  - Reset Peak Hold – path to be finalized
+- **Diagnostics – Output Speaker Aux Line**
+  - Tone Generator: Enable/Disable, Frequency, Level (per channel)
+  - Impedance Measure: Enable/Disable, Frequency, Min/Max Level (per channel)
+  - Tone Detection: Enable/Disable, Frequency, Min/Max Threshold (per channel)
+  - Convenience actions to Stop All Diagnostics (per channel and all channels)
 
 ## Presets
 
@@ -44,7 +49,10 @@ Notes:
 - **Gain Up/Down**: Relative +1 dB / −1 dB.
 - **Clip Indicator**: Highlights when channel is clipping (if supported by device).
 - **Power**: On / Off / Toggle.
-- **Maintenance**: Reset Protection, Reset Peak Hold (placeholders).
+- **Diagnostics**:
+  - Start/Stop Output Tone Generator (per channel and all channels)
+  - Start/Stop Impedance Measure (per channel and all channels)
+  - Enable/Disable Tone Detection (per channel and all channels)
 
 ## Feedbacks
 
@@ -60,7 +68,12 @@ Notes:
 ## Variables (selection)
 
 - Per-channel: mute, gain, signal present, clip, temperature, load impedance
-- Device: power state, fault state
+- Device: name, model (mirrors name), firmware, IP address, power state, fault state
+- Speakers: `Speaker <ch> Model` (speaker model name per output channel)
+
+Notes on variable naming in multi-device mode:
+- Per-device variables include the sanitized device identifier suffix (e.g., `name_192_168_1_10`, `sp1_model_192_168_1_10`).
+- Legacy single-device variables without a suffix mirror the first configured device (e.g., `name`, `sp1_model`).
 
 ## Troubleshooting
 
