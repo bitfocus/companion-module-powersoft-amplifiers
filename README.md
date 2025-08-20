@@ -14,8 +14,8 @@ This repository contains a Bitfocus Companion module to control Powersoft amplif
 
 Detailed user-facing documentation (configuration, actions, variables, feedback, and notes) lives in:
 
-- `companion/HELP.md`
-- Additional technical docs in `docs/`
+- [companion/HELP.md](companion/HELP.md)
+- Additional technical docs in [docs/](docs/)
 
 ## License
 
