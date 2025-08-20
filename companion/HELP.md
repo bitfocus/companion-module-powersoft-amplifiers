@@ -68,12 +68,11 @@ Compatibility:
 ## Variables (selection)
 
 - Per-channel: mute, gain, signal present, clip, temperature, load impedance
-- Device: name, model (mirrors name), firmware, IP address, power state, fault state
+- Device: name, firmware, IP address, power state, fault state
 - Speakers: `Speaker <ch> Model` (speaker model name per output channel)
 
-Notes on variable naming in multi-device mode:
-- Per-device variables include the sanitized device identifier suffix (e.g., `name_192_168_1_10`, `sp1_model_192_168_1_10`).
-- Legacy single-device variables without a suffix mirror the first configured device (e.g., `name`, `sp1_model`).
+Variable naming:
+- All variables are per-device and include a sanitized device identifier suffix (e.g., `name_192_168_1_10`, `sp1_model_192_168_1_10`).
 
 ## Troubleshooting
 
