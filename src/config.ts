@@ -48,7 +48,7 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			label: 'Amplifier Hostname/IP',
 			width: 8,
 			regex: Regex.HOSTNAME,
-			default: '192.168.100.170',
+			default: '',
 			required: true,
 			isVisible: (config) => (config as any).mode !== 'multi',
 		},
