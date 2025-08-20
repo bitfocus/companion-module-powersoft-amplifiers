@@ -256,15 +256,17 @@ export function UpdateActions(self: ModuleInstance): void {
 				},
 			],
 			callback: async (action) => {
-				const gain = parseFloat(action.options.gain as string)
+				const gainDb = parseFloat(action.options.gain as string)
 				const url = resolveUrl(action.options.device as string)
 				// Use channel value directly in the path replacement
 				const path = ParameterPaths.INPUT_CHANNEL_GAIN.replace('{0}', String((action.options.channel as number) - 1))
+				// HTTP API appears to return linear gain for this path, so convert dB -> linear for writes
+				const lin = Math.pow(10, Math.max(-80, Math.min(80, gainDb)) / 20)
 				const payload = buildAgileRequest({
 					actionType: ActionType.WRITE,
 					valueType: ValueType.FLOAT,
 					path,
-					value: gain,
+					value: lin,
 				})
 				await postToAmplifier(url, payload, self)
 			},
@@ -307,20 +309,22 @@ export function UpdateActions(self: ModuleInstance): void {
 				const id = sanitizeDeviceId(host || '')
 				const ch = (action.options.channel as number) - 1
 				const delta = parseFloat(action.options.adjustment as string)
-				const current = self.deviceStatusById[id]?.channels?.[ch]?.gain
-				if (typeof current !== 'number') {
+				const currentDb = self.deviceStatusById[id]?.channels?.[ch]?.gain
+				if (typeof currentDb !== 'number') {
 					self.log('warn', 'Adjust Gain: current gain unknown; cannot apply relative change')
 					return
 				}
 				const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
-				const newGain = clamp(current + delta, -60, 20)
+				const newGainDb = clamp(currentDb + delta, -60, 20)
 				const url = resolveUrl(host)
 				const path = ParameterPaths.INPUT_CHANNEL_GAIN.replace('{0}', String(ch))
+				// Convert dB to linear for HTTP write
+				const lin = Math.pow(10, newGainDb / 20)
 				const payload = buildAgileRequest({
 					actionType: ActionType.WRITE,
 					valueType: ValueType.FLOAT,
 					path,
-					value: newGain,
+					value: lin,
 				})
 				await postToAmplifier(url, payload, self)
 			},

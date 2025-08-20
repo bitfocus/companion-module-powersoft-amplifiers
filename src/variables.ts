@@ -22,9 +22,15 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 			defs.push(
 				{ variableId: `ch${ch}_mute_${id}`, name: `Ch ${ch} Mute [${label}]` },
 				{ variableId: `ch${ch}_gain_${id}`, name: `Ch ${ch} Gain (dB) [${label}]` },
-				{ variableId: `ch${ch}_peak_${id}`, name: `Ch ${ch} Peak Level (dB) [${label}]` },
+				{ variableId: `ch${ch}_limiter_threshold_${id}`, name: `Ch ${ch} Limiter Threshold (dB) [${label}]` },
 				{ variableId: `ch${ch}_clip_${id}`, name: `Ch ${ch} Clip [${label}]` },
 				{ variableId: `ch${ch}_signal_${id}`, name: `Ch ${ch} Signal Present [${label}]` },
+				{ variableId: `ch${ch}_overtemp_${id}`, name: `Ch ${ch} Over-Temperature [${label}]` },
+				{ variableId: `ch${ch}_lowload_${id}`, name: `Ch ${ch} Low Load Protection [${label}]` },
+				{ variableId: `ch${ch}_rail_fault_${id}`, name: `Ch ${ch} Rail Voltage Fault [${label}]` },
+				{ variableId: `ch${ch}_other_fault_${id}`, name: `Ch ${ch} Other Fault [${label}]` },
+				{ variableId: `ch${ch}_thermal_soa_${id}`, name: `Ch ${ch} Thermal SOA [${label}]` },
+				{ variableId: `ch${ch}_aux_current_fault_${id}`, name: `Ch ${ch} AUX Current Fault [${label}]` },
 				{ variableId: `ch${ch}_temp_${id}`, name: `Ch ${ch} Temperature (°C) [${label}]` },
 				{ variableId: `ch${ch}_impedance_${id}`, name: `Ch ${ch} Load Impedance (Ω) [${label}]` },
 				{ variableId: `sp${ch}_model_${id}`, name: `Speaker ${ch} Model [${label}]` },
@@ -59,8 +65,17 @@ export function UpdateVariables(self: ModuleInstance): void {
 			const channel = status.channels?.[i] || {}
 			variables[`ch${ch}_mute_${id}`] = channel.mute ? 'Muted' : 'Unmuted'
 			variables[`ch${ch}_gain_${id}`] = channel.gain?.toFixed(1) || '0'
-			variables[`ch${ch}_peak_${id}`] = channel.peak?.toFixed(1) || '-∞'
+			variables[`ch${ch}_limiter_threshold_${id}`] =
+				channel.limiterThreshold !== undefined && channel.limiterThreshold !== null
+					? Number(channel.limiterThreshold).toFixed(1)
+					: 'n/a'
 			variables[`ch${ch}_clip_${id}`] = channel.clip ? 'Clipping' : 'OK'
+			variables[`ch${ch}_overtemp_${id}`] = channel.overTemp ? 'Yes' : 'No'
+			variables[`ch${ch}_lowload_${id}`] = channel.lowLoad ? 'Yes' : 'No'
+			variables[`ch${ch}_rail_fault_${id}`] = channel.railFault ? 'Yes' : 'No'
+			variables[`ch${ch}_other_fault_${id}`] = channel.otherFault ? 'Yes' : 'No'
+			variables[`ch${ch}_thermal_soa_${id}`] = channel.thermalSOA ? 'Yes' : 'No'
+			variables[`ch${ch}_aux_current_fault_${id}`] = channel.auxCurrentFault ? 'Yes' : 'No'
 			variables[`ch${ch}_signal_${id}`] = channel.signalPresent ? 'Yes' : 'No'
 			variables[`ch${ch}_temp_${id}`] = channel.temp?.toFixed(1) || '0'
 			variables[`ch${ch}_impedance_${id}`] = channel.loadImpedance?.toFixed(2) || '0.00'

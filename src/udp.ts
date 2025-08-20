@@ -13,7 +13,18 @@ export interface UdpOptions {
 export interface UdpStatus {
 	power?: boolean
 	fault?: boolean
-	channels: Array<{ mute?: boolean; gain?: number }>
+	// Critical per-channel indicators populated from READALLALARMS2 when available
+	channels: Array<{
+		mute?: boolean
+		gain?: number
+		clip?: boolean
+		overTemp?: boolean
+		lowLoad?: boolean
+		railFault?: boolean
+		otherFault?: boolean
+		thermalSOA?: boolean
+		auxCurrentFault?: boolean
+	}>
 }
 
 const CMD = {
@@ -123,22 +134,29 @@ function parseReadgmData(data: Buffer, maxChannels: number) {
 	return res
 }
 
-function parseReadAllAlarms2Data(data: Buffer): { ok: boolean; fault: boolean } {
-	// Minimal: if any global or channel bits non-zero -> fault=true
+function parseReadAllAlarms2Data(data: Buffer): {
+	ok: boolean
+	fault: boolean
+	gpio?: number
+	global?: number
+	channelWords?: number[]
+} {
+	// Expect: [answer_ok(u8), gpio_alarms(u8), 0(u16), global(u32), ch0..ch7(u32 each)]
 	if (data.length < 1) return { ok: false, fault: false }
 	const ok = data[0] === 1
-	// Offsets per notes: [ok, gpio(u8), 0(u16), global(u32), ch0(u32) x8]
+	if (!ok) return { ok: false, fault: false }
+	if (data.length < 1 + 1 + 2 + 4) return { ok: true, fault: false }
+	const gpio = data[1]
 	let p = 1 + 1 + 2
-	if (data.length < p + 4) return { ok, fault: false }
 	const global = data.readUInt32LE(p)
 	p += 4
-	let fault = global !== 0
+	const channelWords: number[] = []
 	for (let i = 0; i < 8 && p + 4 <= data.length; i++) {
-		const ch = data.readUInt32LE(p)
+		channelWords[i] = data.readUInt32LE(p)
 		p += 4
-		if (ch !== 0) fault = true
 	}
-	return { ok, fault }
+	const fault = (global ?? 0) !== 0 || channelWords.some((w) => (w ?? 0) !== 0)
+	return { ok: true, fault, gpio, global, channelWords }
 }
 
 async function udpRequest(opts: UdpOptions, cmd: number, data: Buffer, forceZeroCrc = false): Promise<Buffer> {
@@ -222,7 +240,24 @@ export async function readUdpStatus(opts: UdpOptions, maxChannels: number): Prom
 	try {
 		const alData = await udpRequest(opts, CMD.READALLALARMS2, Buffer.alloc(0))
 		const a = parseReadAllAlarms2Data(alData)
-		if (a.ok) status.fault = a.fault
+		if (a.ok) {
+			status.fault = a.fault
+			// Map per‑channel critical bits when available
+			const words = a.channelWords || []
+			for (let i = 0; i < Math.min(words.length, maxChannels); i++) {
+				const w = words[i] >>> 0
+				if (w) {
+					// Bit mapping from PDF
+					status.channels[i].clip = (w & (1 << 0)) !== 0
+					status.channels[i].thermalSOA = (w & (1 << 1)) !== 0
+					status.channels[i].overTemp = (w & (1 << 3)) !== 0
+					status.channels[i].railFault = (w & (1 << 4)) !== 0
+					status.channels[i].auxCurrentFault = (w & (1 << 5)) !== 0
+					status.channels[i].otherFault = (w & (1 << 6)) !== 0
+					status.channels[i].lowLoad = (w & (1 << 7)) !== 0
+				}
+			}
+		}
 	} catch (_) {
 		// ignore
 	}

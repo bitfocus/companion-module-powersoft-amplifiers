@@ -38,6 +38,7 @@ export const PathTypeMap: Record<string, ValueType> = {
 	[ParameterPaths.NETWORK_DNS]: ValueType.STRING,
 	[ParameterPaths.NETWORK_GATEWAY]: ValueType.STRING,
 	[ParameterPaths.NETWORK_NETMASK]: ValueType.STRING,
+	[ParameterPaths.OUTPUT_CHANNEL_PEAK_LIMITER]: ValueType.FLOAT,
 	[ParameterPaths.SPEAKER_GROUPS_2]: ValueType.STRING,
 	[ParameterPaths.SPEAKER_GROUPS_4]: ValueType.STRING,
 	[ParameterPaths.SPEAKER_GROUPS_8]: ValueType.STRING,

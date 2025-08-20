@@ -8,20 +8,53 @@ This document will be updated as more PDF pages are shared and validated on hard
 
 ### 0x19 – READALLALARMS2 (Newer)
 
-Used to read extended alarms/status.
+Used to read alarms status. Matches the PDF section “READALLALARMS2”.
 
-- Request data: none (`count=0`).
-- Response data:
-  - `answer_ok` (UINT8)
-  - `gpio_alarms` (UINT8) – status of output relays (Ottocanali DSP+D). Bit0=CH0 … Bit7=CH7.
-  - `0` (UINT16LE reserved)
-  - `global_alarms` (UINT32LE)
-  - `channel X alarms` (8 × UINT32LE for channels 0..7)
+Request (no payload):
 
-Bit meanings (excerpt):
+```
+STX (0x02) | cmd = 25 (UINT8) | cookie (UINT16LE) | count = 0 (UINT16LE) | answer_port (UINT16LE)
+CRC16 = 0 (UINT16LE) | ~cmd = 230 (UINT8) | ETX (0x03)
+```
 
-- `global_alarms` bits: 0 mains phases detect error (only X), 1 AD config fault, 2 DA config fault, 3 AUX voltage fault (only X), 4 Digi board over-temp [shutdown], 5 PSU over-temp (only X) [shutdown], 6 Fan fault [shutdown], 7 moderate over-temp (only X) [shutdown], 8 high over-temp (only X) [shutdown].
-- `channel X` bits: 0 input clip, 1 active thermal SOA (only X), 3 over-temp, 4 rail voltage fault, 5 AUX current fault (only X), 6 other fault, 7 low load protection. Others: not used per excerpt.
+Answer layout:
+
+```
+STX (0x02) | cmd = 230 (UINT8) | cookie (UINT16LE) | count = 4 (UINT16LE) | 0 (UINT16LE, not used)
+answer_ok (UINT8)
+gpio_alarms (UINT8)
+0 (UINT16LE, reserved)
+global_alarms (UINT32LE)
+channel 0 alarms (UINT32LE)
+channel 1 alarms (UINT32LE)
+...
+channel 7 alarms (UINT32LE)
+CRC16 = 0 (UINT16LE) | ~cmd = 25 (UINT8) | ETX (0x03)
+```
+
+Bit definitions (from PDF):
+
+- gpio_alarms: status of output relays (Ottocanali DSP+D). Bit 0 (LSB) = channel 0, …, bit 7 (MSB) = channel 7.
+- global_alarms (little‑endian 32‑bit):
+  - bit 0: mains phases detect error (only X)
+  - bit 1: AD converter configuration fault
+  - bit 2: DA converter configuration fault
+  - bit 3: AUX voltage fault (only X)
+  - bit 4: Digi board over‑temperature — implicit machine shutdown
+  - bit 5: Power supply over‑temperature (only X) — implicit machine shutdown
+  - bit 6: Fan fault — implicit machine shutdown
+  - bit 7: Moderate over‑temperature (only X) — implicit machine shutdown
+  - bit 8: High over‑temperature (only X) — implicit machine shutdown
+  - bits 9–31: not used
+- channel X alarms (per‑channel 32‑bit):
+  - bit 0: input clip
+  - bit 1: active thermal SOA (only X)
+  - bit 3: over‑temperature
+  - bit 4: rail voltage fault
+  - bit 5: AUX current fault (only X)
+  - bit 6: other fault
+  - bit 7: low load protection
+  - bits 8–31: not used
 
 Probe usage:
 

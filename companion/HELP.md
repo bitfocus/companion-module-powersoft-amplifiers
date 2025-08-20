@@ -25,6 +25,7 @@ Notes:
 
 Compatibility:
 - This module has been tested with Powersoft Ottocanali series amplifiers. Other series may work, but paths and features can vary by model and firmware.
+ - Live output peak metering paths are not exposed by the HTTP API we target. As a result, the module exposes the Limiter Threshold (dB) per channel instead of a real-time peak meter.
 
 ## Actions
 
@@ -67,7 +68,14 @@ Compatibility:
 
 ## Variables (selection)
 
-- Per-channel: mute, gain, signal present, clip, temperature, load impedance
+- Per-channel: mute, gain (dB), limiter threshold (dB), signal present, clip, temperature, load impedance
+- Per-channel critical alarms from UDP READALLALARMS2 (require UDP feedback enabled):
+  - Over-Temperature → `ch<nr>_overtemp_<id>`
+  - Low Load Protection → `ch<nr>_lowload_<id>`
+  - Rail Voltage Fault → `ch<nr>_rail_fault_<id>`
+  - Other Fault → `ch<nr>_other_fault_<id>`
+  - Thermal SOA → `ch<nr>_thermal_soa_<id>`
+  - AUX Current Fault → `ch<nr>_aux_current_fault_<id>`
 - Device: name, firmware, IP address, power state, fault state
 - Speakers: `Speaker <ch> Model` (speaker model name per output channel)
 

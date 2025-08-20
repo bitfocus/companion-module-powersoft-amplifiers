@@ -91,6 +91,8 @@ export const ParameterPaths = {
 	SPEAKER_GROUPS_2: '/Device/Audio/Presets/Live/SpeakerLayout/Connections',
 	SPEAKER_NAME: '/Device/Audio/Presets/Live/SpeakerLayout/Speaker-{0}/ModelName',
 	// Diagnostics - Output Speaker Aux Line
+	OUTPUT_CHANNEL_PEAK_LIMITER:
+		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/PeakLimiter/Threshold/Value',
 	OUTPUT_SPEAKER_GENERATOR_ENABLE:
 		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/ToneGenerator/Enable/Value',
 	OUTPUT_SPEAKER_GENERATOR_FREQUENCY:

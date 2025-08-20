@@ -173,6 +173,22 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			return parseReadResponse(res.body, valueType as any)
 		}
 
+		// Normalize gain to dB. Some HTTP paths return linear gain (V/V ~0..5.6), while UDP returns dB.
+		const normalizeGain = (val: unknown): number | undefined => {
+			if (typeof val !== 'number' || !isFinite(val)) return undefined
+			const n = val
+			// Heuristic:
+			// - If value is negative or > 10, assume it's already dB.
+			// - If value is between 0 and 10, assume linear and convert to dB.
+			if (n < 0 || n > 10) {
+				return Math.max(-80, Math.min(80, n))
+			} else {
+				const lin = Math.max(n, 1e-6)
+				const db = 20 * Math.log10(lin)
+				return Math.max(-80, Math.min(80, db))
+			}
+		}
+
 		// Diagnostic helper for standby to capture raw response using preferred and fallback types
 		const readValueWithDebug = async (url: string, path: string) => {
 			const preferred = getPreferredValueTypeForPath(path, ValueType.STRING)
@@ -316,13 +332,18 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 						for (let ch = 0; ch < chCount; ch++) {
 							const mutePath = ParameterPaths.INPUT_CHANNEL_MUTE.replace('{0}', String(ch))
 							const gainPath = ParameterPaths.INPUT_CHANNEL_GAIN.replace('{0}', String(ch))
+							const limitPath = ParameterPaths.OUTPUT_CHANNEL_PEAK_LIMITER.replace('{0}', String(ch))
 							try {
-								const [mute, gain] = await Promise.all([
+								const [mute, gain, limiter] = await Promise.all([
 									readValue(url, mutePath, ValueType.BOOL),
 									readValue(url, gainPath, ValueType.FLOAT),
+									readValue(url, limitPath, ValueType.FLOAT),
 								])
 								this.deviceStatusById[id].channels[ch].mute = Boolean(mute)
-								this.deviceStatusById[id].channels[ch].gain = typeof gain === 'number' ? gain : undefined
+								this.deviceStatusById[id].channels[ch].gain = normalizeGain(gain)
+								if (typeof limiter === 'number' && isFinite(limiter)) {
+									this.deviceStatusById[id].channels[ch].limiterThreshold = limiter
+								}
 							} catch (chErr: any) {
 								this.log('debug', `Channel ${ch + 1} poll failed[${id}]: ${chErr?.message || chErr}`)
 							}
@@ -406,7 +427,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				const ch = status.channels[i]
 				if (ch) {
 					if (typeof ch.mute === 'boolean') this.deviceStatus.channels[i].mute = ch.mute
-					if (typeof ch.gain === 'number') this.deviceStatus.channels[i].gain = ch.gain
+					if (typeof ch.gain === 'number') {
+						// Normalize even for UDP for consistency (UDP already returns dB)
+						const g = ch.gain
+						this.deviceStatus.channels[i].gain = g < 0 || g > 10 ? g : 20 * Math.log10(Math.max(g, 1e-6))
+					}
 				}
 			}
 

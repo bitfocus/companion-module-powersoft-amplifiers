@@ -15,6 +15,12 @@ export type FeedbackId =
 	| 'diagImpMeasureEnabled'
 	| 'diagToneDetectionEnabled'
 	| 'deviceFault'
+	| 'channelOverTemp'
+	| 'channelLowLoad'
+	| 'channelRailFault'
+	| 'channelOtherFault'
+	| 'channelThermalSOA'
+	| 'channelAuxCurrentFault'
 
 interface FeedbackBase {
 	type: 'boolean' | 'advanced'
@@ -151,6 +157,175 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				const status = resolveStatus(feedback.options.device as string)
 				return status.channels[channel]?.mute === true
 			},
+		},
+	}
+
+	// Per-channel critical UDP alarms (always registered; depend on UDP status fields)
+	feedbacks.channelOverTemp = {
+		type: 'boolean',
+		name: 'Channel Over-Temperature (UDP)',
+		description: 'True when per-channel over-temperature alarm is set (READALLALARMS2)',
+		defaultStyle: {
+			bgcolor: combineRgb(200, 0, 0),
+			color: combineRgb(255, 255, 255),
+		},
+		options: [
+			{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+			{
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: 1,
+				choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+					id: i + 1,
+					label: `Channel ${i + 1}`,
+				})),
+			},
+		],
+		callback: (feedback) => {
+			const channel = (feedback.options.channel as number) - 1
+			const status = resolveStatus(feedback.options.device as string)
+			return status.channels?.[channel]?.overTemp === true
+		},
+	}
+
+	feedbacks.channelLowLoad = {
+		type: 'boolean',
+		name: 'Channel Low Load (UDP)',
+		description: 'True when per-channel low load protection is active (READALLALARMS2)',
+		defaultStyle: {
+			bgcolor: combineRgb(255, 165, 0),
+			color: combineRgb(0, 0, 0),
+		},
+		options: [
+			{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+			{
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: 1,
+				choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+					id: i + 1,
+					label: `Channel ${i + 1}`,
+				})),
+			},
+		],
+		callback: (feedback) => {
+			const channel = (feedback.options.channel as number) - 1
+			const status = resolveStatus(feedback.options.device as string)
+			return status.channels?.[channel]?.lowLoad === true
+		},
+	}
+
+	feedbacks.channelRailFault = {
+		type: 'boolean',
+		name: 'Channel Rail Voltage Fault (UDP)',
+		description: 'True when per-channel rail voltage fault is set (READALLALARMS2)',
+		defaultStyle: {
+			bgcolor: combineRgb(200, 0, 0),
+			color: combineRgb(255, 255, 255),
+		},
+		options: [
+			{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+			{
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: 1,
+				choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+					id: i + 1,
+					label: `Channel ${i + 1}`,
+				})),
+			},
+		],
+		callback: (feedback) => {
+			const channel = (feedback.options.channel as number) - 1
+			const status = resolveStatus(feedback.options.device as string)
+			return status.channels?.[channel]?.railFault === true
+		},
+	}
+
+	feedbacks.channelOtherFault = {
+		type: 'boolean',
+		name: 'Channel Other Fault (UDP)',
+		description: 'True when per-channel “other fault” bit is set (READALLALARMS2)',
+		defaultStyle: {
+			bgcolor: combineRgb(200, 0, 0),
+			color: combineRgb(255, 255, 255),
+		},
+		options: [
+			{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+			{
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: 1,
+				choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+					id: i + 1,
+					label: `Channel ${i + 1}`,
+				})),
+			},
+		],
+		callback: (feedback) => {
+			const channel = (feedback.options.channel as number) - 1
+			const status = resolveStatus(feedback.options.device as string)
+			return status.channels?.[channel]?.otherFault === true
+		},
+	}
+
+	feedbacks.channelThermalSOA = {
+		type: 'boolean',
+		name: 'Channel Thermal SOA (UDP)',
+		description: 'True when per-channel Thermal SOA bit is set (READALLALARMS2)',
+		defaultStyle: {
+			bgcolor: combineRgb(255, 165, 0),
+			color: combineRgb(0, 0, 0),
+		},
+		options: [
+			{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+			{
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: 1,
+				choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+					id: i + 1,
+					label: `Channel ${i + 1}`,
+				})),
+			},
+		],
+		callback: (feedback) => {
+			const channel = (feedback.options.channel as number) - 1
+			const status = resolveStatus(feedback.options.device as string)
+			return status.channels?.[channel]?.thermalSOA === true
+		},
+	}
+
+	feedbacks.channelAuxCurrentFault = {
+		type: 'boolean',
+		name: 'Channel AUX Current Fault (UDP)',
+		description: 'True when per-channel AUX current fault bit is set (READALLALARMS2)',
+		defaultStyle: {
+			bgcolor: combineRgb(200, 0, 0),
+			color: combineRgb(255, 255, 255),
+		},
+		options: [
+			{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+			{
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: 1,
+				choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+					id: i + 1,
+					label: `Channel ${i + 1}`,
+				})),
+			},
+		],
+		callback: (feedback) => {
+			const channel = (feedback.options.channel as number) - 1
+			const status = resolveStatus(feedback.options.device as string)
+			return status.channels?.[channel]?.auxCurrentFault === true
 		},
 	}
 
