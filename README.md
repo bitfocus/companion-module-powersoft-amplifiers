@@ -1,68 +1,22 @@
 # companion-module-powersoft-amplifier
 
-This module allows you to control Powersoft amplifiers using their network API.
+Short description and project overview for the Bitfocus Companion module for Powersoft amplifiers.
 
-## Configuration
+## Overview
 
-1. **Network Settings**
-   - Set the IP address of your Powersoft amplifier in the `Amplifier IP` field
-   - Set the port for the API (default: 80 for HTTP, 443 for HTTPS)
-   - Configure the update frequency in milliseconds (default: 1000ms)
+This repository contains a Bitfocus Companion module to control Powersoft amplifiers over the network (HTTP API) with optional UDP feedback polling for power, mutes, and alarms.
 
-2. **Authentication**
-   - Enter the username (default: admin)
-   - Enter the password (if required by your device)
+- Supports single-device and multi-device setups.
+- Targets Ottocanali and similar series using the documented API.
+- UDP alarms/feedback can be enabled via `enableUdpFeedback` in the module config.
 
-## Available Actions
+## Documentation
 
-**Power Control**
+Detailed user-facing documentation (configuration, actions, variables, feedback, and notes) lives in:
 
-- Power On/Off
-- Toggle Power
+- `companion/HELP.md`
+- Additional technical docs in `docs/`
 
-**Channel Control**
+## License
 
-- Mute/Unmute Channel
-- Set Channel Gain
-- Select Preset
-
-**System**
-
-- Reboot Device
-- Factory Reset (use with caution)
-
-## Available Variables
-
-**System**
-
-- Device Model
-- Firmware Version
-- IP Address
-- Temperature
-- Fan Speed
-
-**Channel Status**
-
-- Channel Name
-- Mute Status
-- Gain Level
-- Signal Present
-- Clip Status
-- Temperature
-- Load Impedance
-
-## Available Feedback
-
-- Power Status
-- Channel Mute Status
-- Clip Detection
-- Signal Present
-- Temperature Warning
-- Fault Status
-
-## Troubleshooting
-
-- Ensure your amplifier is connected to the network
-- Verify the IP address is correct and reachable
-- Check that the correct port is being used
-- Verify authentication credentials if required by your device
+MIT
