@@ -96,7 +96,8 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 	private isConfigReady(): boolean {
 		const hostOk = typeof this.config?.host === 'string' && this.config.host.trim().length > 0
-		const devCsvOk = typeof (this.config as any)?.devicesCsv === 'string' && (this.config as any).devicesCsv.trim().length > 0
+		const devCsvOk =
+			typeof (this.config as any)?.devicesCsv === 'string' && (this.config as any).devicesCsv.trim().length > 0
 		return hostOk || devCsvOk
 	}
 
