@@ -90,4 +90,27 @@ export const ParameterPaths = {
 	SPEAKER_GROUPS_4: '/Device/Audio/Presets/Live/SpeakerLayout/Connections',
 	SPEAKER_GROUPS_2: '/Device/Audio/Presets/Live/SpeakerLayout/Connections',
 	SPEAKER_NAME: '/Device/Audio/Presets/Live/SpeakerLayout/Speaker-{0}/ModelName',
+	// Diagnostics - Output Speaker Aux Line
+	OUTPUT_SPEAKER_GENERATOR_ENABLE:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/ToneGenerator/Enable/Value',
+	OUTPUT_SPEAKER_GENERATOR_FREQUENCY:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/ToneGenerator/Frequency/Value',
+	OUTPUT_SPEAKER_GENERATOR_VOLTAGE:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/ToneGenerator/Level/Value',
+	OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputImpedanceMeasure/Enable/Value',
+	OUTPUT_SPEAKER_IMPEDANCE_DETECTION_FREQUENCY:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputImpedanceMeasure/Frequency/Value',
+	OUTPUT_SPEAKER_IMPEDANCE_DETECTION_MAX_V:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputImpedanceMeasure/MaxLevel/Value',
+	OUTPUT_SPEAKER_IMPEDANCE_DETECTION_MIN_V:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputImpedanceMeasure/MinLevel/Value',
+	OUTPUT_SPEAKER_TONE_DETECTION_ENABLE:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputToneDetection/Enable/Value',
+	OUTPUT_SPEAKER_TONE_DETECTION_FREQUENCY:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputToneDetection/Frequency/Value',
+	OUTPUT_SPEAKER_TONE_DETECTION_MAX_TH:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputToneDetection/MaxLevel/Value',
+	OUTPUT_SPEAKER_TONE_DETECTION_MIN_TH:
+		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/OutputToneDetection/MinLevel/Value',
 }

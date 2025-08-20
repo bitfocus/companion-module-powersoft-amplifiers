@@ -250,12 +250,12 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 				try {
 					// Ensure structure
-					if (!this.deviceStatusById[id]) this.deviceStatusById[id] = { channels: [] }
+					if (!this.deviceStatusById[id]) this.deviceStatusById[id] = { channels: [], speakers: [] }
 					if (!Array.isArray(this.deviceStatusById[id].channels)) this.deviceStatusById[id].channels = []
+					if (!Array.isArray(this.deviceStatusById[id].speakers)) this.deviceStatusById[id].speakers = []
 					for (let i = 0; i < chCount; i++) {
-						if (!this.deviceStatusById[id].channels[i]) {
-							this.deviceStatusById[id].channels[i] = {}
-						}
+						if (!this.deviceStatusById[id].channels[i]) this.deviceStatusById[id].channels[i] = {}
+						if (!this.deviceStatusById[id].speakers[i]) this.deviceStatusById[id].speakers[i] = {}
 					}
 
 					// Determine power path per device (override -> cached -> discovery)
@@ -282,7 +282,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 						? await readValueWithDebug(url, powerPath)
 						: { raw: undefined as any, valueType: 'ERROR' as const }
 
-					const [firmware, model, ipAddr] = await Promise.all([
+					const [firmware, name, ipAddr] = await Promise.all([
 						readValue(url, ParameterPaths.DEVICE_FIRMWARE_VERSION, ValueType.STRING),
 						readValue(url, ParameterPaths.DEVICE_NAME, ValueType.STRING),
 						readValue(url, ParameterPaths.NETWORK_ADDRESS, ValueType.STRING),
@@ -306,7 +306,9 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 					)
 					this.deviceStatusById[id].power = computedPowerOn
 					this.deviceStatusById[id].firmware = firmware || 'Unknown'
-					this.deviceStatusById[id].model = model || 'Unknown'
+					this.deviceStatusById[id].name = name || host
+					// Back-compat: no API model path -> mirror name into model
+					this.deviceStatusById[id].model = this.deviceStatusById[id].name
 					this.deviceStatusById[id].ip = ipAddr || host
 
 					// Channel-level reads (mute/gain)
@@ -323,6 +325,17 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 								this.deviceStatusById[id].channels[ch].gain = typeof gain === 'number' ? gain : undefined
 							} catch (chErr: any) {
 								this.log('debug', `Channel ${ch + 1} poll failed[${id}]: ${chErr?.message || chErr}`)
+							}
+
+							// Speaker model name
+							try {
+								const spPath = ParameterPaths.SPEAKER_NAME.replace('{0}', String(ch))
+								const spName = await readValue(url, spPath, ValueType.STRING)
+								if (typeof spName === 'string' && spName.length > 0) {
+									this.deviceStatusById[id].speakers[ch].modelName = spName
+								}
+							} catch (spErr: any) {
+								this.log('debug', `Speaker ${ch + 1} name poll failed[${id}]: ${spErr?.message || spErr}`)
 							}
 						}
 					}

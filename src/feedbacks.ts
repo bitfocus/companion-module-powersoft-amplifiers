@@ -11,6 +11,9 @@ export type FeedbackId =
 	| 'channelTempWarning'
 	| 'channelTempCritical'
 	| 'channelImpedanceWarning'
+	| 'diagToneGenEnabled'
+	| 'diagImpMeasureEnabled'
+	| 'diagToneDetectionEnabled'
 	| 'deviceFault'
 
 interface FeedbackBase {
@@ -46,6 +49,10 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 	const hasTemp = 'OUTPUT_CHANNEL_TEMPERATURE' in ParameterPaths || 'INPUT_CHANNEL_TEMPERATURE' in ParameterPaths
 	const hasImpedance =
 		'OUTPUT_SPEAKER_IMPEDANCE' in ParameterPaths || 'OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE' in ParameterPaths
+	const hasDiagToneGen =
+		'OUTPUT_SPEAKER_GENERATOR_ENABLE' in ParameterPaths && 'OUTPUT_SPEAKER_GENERATOR_FREQUENCY' in ParameterPaths
+	const hasDiagImpedance = 'OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE' in ParameterPaths
+	const hasDiagToneDetect = 'OUTPUT_SPEAKER_TONE_DETECTION_ENABLE' in ParameterPaths
 
 	// Helpers for multi-device feedbacks
 	const deviceChoices = (): { id: string; label: string }[] => {
@@ -353,6 +360,115 @@ export function UpdateFeedbacks(self: ModuleInstance): void {
 				const warningImpedance = parseFloat(feedback.options.warningImpedance as string) || 4
 				const status = resolveStatus(feedback.options.device as string)
 				return (status.channels[channel]?.loadImpedance || 0) < warningImpedance
+			},
+		}
+	}
+
+	// Diagnostics feedbacks (enable-state), gated by parameter path presence
+	if (hasDiagToneGen) {
+		feedbacks.diagToneGenEnabled = {
+			type: 'boolean',
+			name: 'Diagnostics: Tone Generator Enabled',
+			description: 'True when output tone generator is enabled for the channel',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 100, 0),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					id: 'device',
+					label: 'Device',
+					default: deviceChoices()[0]?.id,
+					choices: deviceChoices(),
+				},
+				{
+					type: 'dropdown',
+					label: 'Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `Channel ${i + 1}`,
+					})),
+				},
+			],
+			callback: (feedback) => {
+				const channel = (feedback.options.channel as number) - 1
+				const status = resolveStatus(feedback.options.device as string)
+				return status.channels?.[channel]?.diagToneGen?.enabled === true
+			},
+		}
+	}
+
+	if (hasDiagImpedance) {
+		feedbacks.diagImpMeasureEnabled = {
+			type: 'boolean',
+			name: 'Diagnostics: Impedance Measure Enabled',
+			description: 'True when output impedance measurement is enabled for the channel',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 215, 0),
+				color: combineRgb(0, 0, 0),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					id: 'device',
+					label: 'Device',
+					default: deviceChoices()[0]?.id,
+					choices: deviceChoices(),
+				},
+				{
+					type: 'dropdown',
+					label: 'Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `Channel ${i + 1}`,
+					})),
+				},
+			],
+			callback: (feedback) => {
+				const channel = (feedback.options.channel as number) - 1
+				const status = resolveStatus(feedback.options.device as string)
+				return status.channels?.[channel]?.diagImpedance?.enabled === true
+			},
+		}
+	}
+
+	if (hasDiagToneDetect) {
+		feedbacks.diagToneDetectionEnabled = {
+			type: 'boolean',
+			name: 'Diagnostics: Tone Detection Enabled',
+			description: 'True when output tone detection is enabled for the channel',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 80, 160),
+				color: combineRgb(255, 255, 255),
+			},
+			options: [
+				{
+					type: 'dropdown',
+					id: 'device',
+					label: 'Device',
+					default: deviceChoices()[0]?.id,
+					choices: deviceChoices(),
+				},
+				{
+					type: 'dropdown',
+					label: 'Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `Channel ${i + 1}`,
+					})),
+				},
+			],
+			callback: (feedback) => {
+				const channel = (feedback.options.channel as number) - 1
+				const status = resolveStatus(feedback.options.device as string)
+				return status.channels?.[channel]?.diagToneDetect?.enabled === true
 			},
 		}
 	}

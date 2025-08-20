@@ -11,6 +11,7 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 
 	const addDeviceDefs = (id: string, label: string) => {
 		defs.push(
+			{ variableId: `name_${id}`, name: `Device Name [${label}]` },
 			{ variableId: `model_${id}`, name: `Device Model [${label}]` },
 			{ variableId: `firmware_${id}`, name: `Firmware Version [${label}]` },
 			{ variableId: `ip_${id}`, name: `IP Address [${label}]` },
@@ -29,6 +30,7 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 				{ variableId: `ch${ch}_signal_${id}`, name: `Ch ${ch} Signal Present [${label}]` },
 				{ variableId: `ch${ch}_temp_${id}`, name: `Ch ${ch} Temperature (°C) [${label}]` },
 				{ variableId: `ch${ch}_impedance_${id}`, name: `Ch ${ch} Load Impedance (Ω) [${label}]` },
+				{ variableId: `sp${ch}_model_${id}`, name: `Speaker ${ch} Model [${label}]` },
 			)
 		}
 	}
@@ -42,6 +44,7 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 	// Legacy single-device variables (mirror first device)
 	if (firstId) {
 		defs.push(
+			{ variableId: 'name', name: 'Device Name' },
 			{ variableId: 'model', name: 'Device Model' },
 			{ variableId: 'firmware', name: 'Firmware Version' },
 			{ variableId: 'ip', name: 'IP Address' },
@@ -60,6 +63,7 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 				{ variableId: `ch${ch}_signal`, name: `Channel ${ch} Signal Present` },
 				{ variableId: `ch${ch}_temp`, name: `Channel ${ch} Temperature (°C)` },
 				{ variableId: `ch${ch}_impedance`, name: `Channel ${ch} Load Impedance (Ω)` },
+				{ variableId: `sp${ch}_model`, name: `Speaker ${ch} Model` },
 			)
 		}
 	}
@@ -75,6 +79,7 @@ export function UpdateVariables(self: ModuleInstance): void {
 	const chCount = self.config.maxChannels
 
 	const writeDeviceVars = (id: string, label: string, status: any) => {
+		variables[`name_${id}`] = status.name || label
 		variables[`model_${id}`] = status.model || 'Unknown'
 		variables[`firmware_${id}`] = status.firmware || '0.0.0'
 		variables[`ip_${id}`] = status.ip || label
@@ -92,6 +97,8 @@ export function UpdateVariables(self: ModuleInstance): void {
 			variables[`ch${ch}_signal_${id}`] = channel.signalPresent ? 'Yes' : 'No'
 			variables[`ch${ch}_temp_${id}`] = channel.temp?.toFixed(1) || '0'
 			variables[`ch${ch}_impedance_${id}`] = channel.loadImpedance?.toFixed(2) || '0.00'
+			const speaker = status.speakers?.[i] || {}
+			variables[`sp${ch}_model_${id}`] = speaker.modelName || 'Unknown'
 		}
 	}
 
@@ -108,6 +115,7 @@ export function UpdateVariables(self: ModuleInstance): void {
 	// Legacy mirror from first device
 	if (firstId && self.deviceStatusById[firstId]) {
 		const s = self.deviceStatusById[firstId]
+		variables.name = s.name || hosts[0] || self.config.host || 'Unknown'
 		variables.model = s.model || 'Unknown'
 		variables.firmware = s.firmware || '0.0.0'
 		variables.ip = s.ip || hosts[0] || self.config.host || '0.0.0.0'
@@ -125,6 +133,8 @@ export function UpdateVariables(self: ModuleInstance): void {
 			variables[`ch${ch}_signal`] = channel.signalPresent ? 'Yes' : 'No'
 			variables[`ch${ch}_temp`] = channel.temp?.toFixed(1) || '0'
 			variables[`ch${ch}_impedance`] = channel.loadImpedance?.toFixed(2) || '0.00'
+			const speaker = s.speakers?.[i] || {}
+			variables[`sp${ch}_model`] = speaker.modelName || 'Unknown'
 		}
 	}
 

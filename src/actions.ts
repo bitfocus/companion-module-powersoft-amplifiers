@@ -401,5 +401,397 @@ export function UpdateActions(self: ModuleInstance): void {
 				self.log('warn', 'Reset Peak Hold: implement with correct ParameterPaths and types.')
 			},
 		},
+
+		// Diagnostics: Output Tone Generator
+		startOutputToneGenerator: {
+			name: 'Diagnostics: Start Tone Generator',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+				{
+					type: 'dropdown',
+					label: 'Output Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `CH ${i + 1}`,
+					})),
+				},
+				{ type: 'number', id: 'frequency', label: 'Frequency (Hz)', default: 1000, min: 10, max: 20000, step: 1 },
+				{ type: 'number', id: 'level', label: 'Level (V or dBFS)', default: -20, min: -60, max: 0, step: 1 },
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const ch = (action.options.channel as number) - 1
+				const freqPath = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_FREQUENCY.replace('{0}', String(ch))
+				const lvlPath = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_VOLTAGE.replace('{0}', String(ch))
+				const enPath = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_ENABLE.replace('{0}', String(ch))
+				const freq = Number(action.options.frequency)
+				const level = Number(action.options.level)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: freqPath,
+						value: freq,
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: lvlPath,
+						value: level,
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: enPath,
+						value: true,
+					}),
+					self,
+				)
+			},
+		},
+		stopOutputToneGenerator: {
+			name: 'Diagnostics: Stop Tone Generator',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+				{
+					type: 'dropdown',
+					label: 'Output Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `CH ${i + 1}`,
+					})),
+				},
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const ch = (action.options.channel as number) - 1
+				const enPath = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_ENABLE.replace('{0}', String(ch))
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: enPath,
+						value: false,
+					}),
+					self,
+				)
+			},
+		},
+
+		// Diagnostics: Output Impedance Measurement
+		startImpedanceMeasure: {
+			name: 'Diagnostics: Start Impedance Measure',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+				{
+					type: 'dropdown',
+					label: 'Output Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `CH ${i + 1}`,
+					})),
+				},
+				{ type: 'number', id: 'frequency', label: 'Frequency (Hz)', default: 1000, min: 10, max: 20000, step: 1 },
+				{ type: 'number', id: 'min', label: 'Min Level', default: -30, min: -60, max: 0, step: 1 },
+				{ type: 'number', id: 'max', label: 'Max Level', default: -10, min: -60, max: 0, step: 1 },
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const ch = (action.options.channel as number) - 1
+				const fPath = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_FREQUENCY.replace('{0}', String(ch))
+				const minPath = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_MIN_V.replace('{0}', String(ch))
+				const maxPath = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_MAX_V.replace('{0}', String(ch))
+				const enPath = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE.replace('{0}', String(ch))
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: fPath,
+						value: Number(action.options.frequency),
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: minPath,
+						value: Number(action.options.min),
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: maxPath,
+						value: Number(action.options.max),
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: enPath,
+						value: true,
+					}),
+					self,
+				)
+			},
+		},
+		stopImpedanceMeasure: {
+			name: 'Diagnostics: Stop Impedance Measure',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+				{
+					type: 'dropdown',
+					label: 'Output Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `CH ${i + 1}`,
+					})),
+				},
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const ch = (action.options.channel as number) - 1
+				const enPath = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE.replace('{0}', String(ch))
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: enPath,
+						value: false,
+					}),
+					self,
+				)
+			},
+		},
+
+		// Diagnostics: Output Tone Detection
+		enableToneDetection: {
+			name: 'Diagnostics: Enable Tone Detection',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+				{
+					type: 'dropdown',
+					label: 'Output Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `CH ${i + 1}`,
+					})),
+				},
+				{ type: 'number', id: 'frequency', label: 'Frequency (Hz)', default: 1000, min: 10, max: 20000, step: 1 },
+				{ type: 'number', id: 'min', label: 'Min Threshold', default: -40, min: -80, max: 0, step: 1 },
+				{ type: 'number', id: 'max', label: 'Max Threshold', default: -10, min: -80, max: 0, step: 1 },
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const ch = (action.options.channel as number) - 1
+				const fPath = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_FREQUENCY.replace('{0}', String(ch))
+				const minPath = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_MIN_TH.replace('{0}', String(ch))
+				const maxPath = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_MAX_TH.replace('{0}', String(ch))
+				const enPath = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_ENABLE.replace('{0}', String(ch))
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: fPath,
+						value: Number(action.options.frequency),
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: minPath,
+						value: Number(action.options.min),
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.FLOAT,
+						path: maxPath,
+						value: Number(action.options.max),
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: enPath,
+						value: true,
+					}),
+					self,
+				)
+			},
+		},
+		disableToneDetection: {
+			name: 'Diagnostics: Disable Tone Detection',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+				{
+					type: 'dropdown',
+					label: 'Output Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `CH ${i + 1}`,
+					})),
+				},
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const ch = (action.options.channel as number) - 1
+				const enPath = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_ENABLE.replace('{0}', String(ch))
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: enPath,
+						value: false,
+					}),
+					self,
+				)
+			},
+		},
+
+		// Diagnostics: Stop All (per channel)
+		stopAllDiagnostics: {
+			name: 'Diagnostics: Stop All (Channel)',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+				{
+					type: 'dropdown',
+					label: 'Output Channel',
+					id: 'channel',
+					default: 1,
+					choices: Array.from({ length: self.config.maxChannels || 8 }, (_, i) => ({
+						id: i + 1,
+						label: `CH ${i + 1}`,
+					})),
+				},
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const ch = (action.options.channel as number) - 1
+				const gen = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_ENABLE.replace('{0}', String(ch))
+				const imp = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE.replace('{0}', String(ch))
+				const det = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_ENABLE.replace('{0}', String(ch))
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: gen,
+						value: false,
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: imp,
+						value: false,
+					}),
+					self,
+				)
+				await postToAmplifier(
+					url,
+					buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: det,
+						value: false,
+					}),
+					self,
+				)
+			},
+		},
+
+		// Diagnostics: Stop All (all channels on device)
+		stopAllDiagnosticsAllChannels: {
+			name: 'Diagnostics: Stop All (All Channels)',
+			options: [
+				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
+			],
+			callback: async (action) => {
+				const url = resolveUrl(action.options.device as string)
+				const maxCh = self.config.maxChannels || 8
+				for (let ch = 0; ch < maxCh; ch++) {
+					const gen = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_ENABLE.replace('{0}', String(ch))
+					const imp = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE.replace('{0}', String(ch))
+					const det = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_ENABLE.replace('{0}', String(ch))
+					await postToAmplifier(
+						url,
+						buildAgileRequest({
+							actionType: ActionType.WRITE,
+							valueType: ValueType.BOOL,
+							path: gen,
+							value: false,
+						}),
+						self,
+					)
+					await postToAmplifier(
+						url,
+						buildAgileRequest({
+							actionType: ActionType.WRITE,
+							valueType: ValueType.BOOL,
+							path: imp,
+							value: false,
+						}),
+						self,
+					)
+					await postToAmplifier(
+						url,
+						buildAgileRequest({
+							actionType: ActionType.WRITE,
+							valueType: ValueType.BOOL,
+							path: det,
+							value: false,
+						}),
+						self,
+					)
+				}
+			},
+		},
 	})
 }
