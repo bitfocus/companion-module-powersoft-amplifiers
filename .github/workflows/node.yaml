@@ -5,8 +5,11 @@ on:
     branches:
       - '**'
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
+      - 'v[0-9]+\.[0-9]+\.[0-9]+*'
   pull_request:
+
+permissions:
+  contents: write
 
 jobs:
   lint:
@@ -74,3 +77,47 @@ jobs:
   #         CI: true
   #     - name: Send coverage
   #       uses: codecov/codecov-action@v5
+
+  release:
+    name: Release on version bump
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Derive version and tag from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+      - name: Check if release exists
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = `${{ steps.version.outputs.tag }}`
+            try {
+              await github.rest.repos.getReleaseByTag({ owner: context.repo.owner, repo: context.repo.repo, tag })
+              core.setOutput('exists', 'true')
+            } catch (e) {
+              if (e.status === 404) {
+                core.setOutput('exists', 'false')
+              } else {
+                throw e
+              }
+            }
+      - name: Create GitHub Release (auto-creates tag if missing)
+        if: steps.check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
