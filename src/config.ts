@@ -11,6 +11,9 @@ export interface ModuleConfig {
 	pollingInterval: number
 	maxChannels: number
 	powerPath?: string
+	// Discovery
+	scan?: boolean
+	deviceIds?: string[]
 	// Multi-device support: comma/newline separated list of device IPs
 	devicesCsv?: string
 	// UDP (second API) options
@@ -20,7 +23,11 @@ export interface ModuleConfig {
 	udpAnswerPortZero?: boolean
 }
 
-export function GetConfigFields(): SomeCompanionConfigField[] {
+type InstanceLike = {
+	FOUND_DEVICES?: Record<string, any>
+}
+
+export function GetConfigFields(self?: InstanceLike): SomeCompanionConfigField[] {
 	return [
 		{
 			type: 'static-text',
@@ -29,6 +36,38 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			width: 12,
 			value:
 				'Enter the connection details for your Powersoft amplifier. The polling interval determines how often the module will check for updates from the device.',
+		},
+		{
+			type: 'checkbox',
+			id: 'scan',
+			label: 'Scan network for Powersoft amplifiers (UDP 8004)',
+			width: 12,
+			default: false,
+			tooltip: 'Broadcast a discovery packet on UDP port 8004 and list discovered devices.',
+		},
+		{
+			type: 'multidropdown',
+			id: 'deviceIds',
+			label: 'Select discovered amplifier(s)',
+			width: 12,
+			isVisible: (cfg) => !!(cfg as any).scan,
+			choices: (() => {
+				const list: Array<{ id: string; label: string }> = []
+				try {
+					const found: Record<string, any> = self?.FOUND_DEVICES || {}
+					for (const id of Object.keys(found)) {
+						const d = found[id] || {}
+						const label =
+							`${d.model || 'Powersoft'} ${d.serial || ''} at ${d.host || ''} ${d.options ? '(' + d.options + ')' : ''}`.trim()
+						list.push({ id, label })
+					}
+				} catch (_e) {
+					void 0
+				}
+				return list
+			})(),
+			default: [],
+			tooltip: 'Discovered devices are populated while scanning is enabled. Hold Ctrl/Cmd to select multiple.',
 		},
 		{
 			type: 'dropdown',

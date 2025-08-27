@@ -20,6 +20,11 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	// Per-device error handling/backoff
 	errorCountById: Record<string, number> = {}
 	backoffUntilById: Record<string, number> = {}
+	// Discovery state
+	FOUND_DEVICES: Record<string, any> = {}
+	SCANNING = false
+	discoverySocket?: any
+	_discoveryInterval?: NodeJS.Timeout | null
 
 	constructor(internal: unknown) {
 		super(internal)
@@ -28,6 +33,14 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	async init(config: ModuleConfig): Promise<void> {
 		this.config = config
 		this.clearIntervals()
+		// Discovery lifecycle
+		if (this.config.scan) {
+			const { startDiscovery } = await import('./discovery.js')
+			startDiscovery(this)
+		} else {
+			const { stopDiscovery } = await import('./discovery.js')
+			stopDiscovery(this)
+		}
 		// Always register UI elements
 		this.updateActions()
 		this.updateFeedbacks()
@@ -47,12 +60,49 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 
 	async destroy(): Promise<void> {
 		this.clearIntervals()
+		try {
+			const { stopDiscovery } = await import('./discovery.js')
+			stopDiscovery(this)
+		} catch (_e) {
+			// no-op
+		}
 		this.log('debug', 'destroy')
 	}
 
 	async configUpdated(config: ModuleConfig): Promise<void> {
 		this.config = config
 		this.clearIntervals()
+		// Map discovered device(s) -> host/devicesCsv when selected
+		if (this.config.scan && Array.isArray(this.config.deviceIds) && this.config.deviceIds.length > 0) {
+			const ids: string[] = this.config.deviceIds
+			const hosts: string[] = ids
+				.map((id) => this.FOUND_DEVICES?.[id]?.host)
+				.filter((v: any): v is string => typeof v === 'string' && v.length > 0)
+			if (this.config.mode === 'multi') {
+				const csv = hosts.join(', ')
+				if (csv !== (this.config.devicesCsv || '')) {
+					this.config.devicesCsv = csv
+					this.saveConfig(this.config)
+				}
+			} else {
+				const first = hosts[0]
+				if (first && this.config.host !== first) {
+					this.config.host = first
+					this.saveConfig(this.config)
+				}
+			}
+		}
+		// Discovery lifecycle
+		if (this.config.scan) {
+			const { startDiscovery } = await import('./discovery.js')
+			startDiscovery(this)
+		} else {
+			this.FOUND_DEVICES = {}
+			this.config.deviceIds = []
+			this.saveConfig(this.config)
+			const { stopDiscovery } = await import('./discovery.js')
+			stopDiscovery(this)
+		}
 		this.updateActions()
 		this.updateFeedbacks()
 		this.updateVariableDefinitions()
@@ -68,7 +118,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 	}
 
 	getConfigFields(): SomeCompanionConfigField[] {
-		return GetConfigFields()
+		return GetConfigFields(this as any)
 	}
 
 	updateActions(): void {
