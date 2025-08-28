@@ -109,6 +109,68 @@ export function UpdatePresets(self: ModuleInstance): CompanionPresetDefinitions 
 				feedbacks: [],
 			},
 
+			// Gain Setpoints (absolute)
+			[`gain_set_m10_ch${channel}`]: {
+				type: 'button',
+				category: `${channelName} Gain`,
+				name: `${channelName} Gain -10 dB`,
+				style: {
+					text: `${channelName}\\nSET -10dB`,
+					size: 'auto',
+					color: combineRgb(0, 0, 0),
+					bgcolor: combineRgb(180, 200, 255),
+				},
+				steps: [
+					{
+						down: [
+							{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: -10 } },
+						],
+						up: [],
+					},
+				],
+				feedbacks: [],
+			},
+			[`gain_set_0_ch${channel}`]: {
+				type: 'button',
+				category: `${channelName} Gain`,
+				name: `${channelName} Gain 0 dB`,
+				style: {
+					text: `${channelName}\\nSET 0dB`,
+					size: 'auto',
+					color: combineRgb(0, 0, 0),
+					bgcolor: combineRgb(200, 255, 200),
+				},
+				steps: [
+					{
+						down: [
+							{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: 0 } },
+						],
+						up: [],
+					},
+				],
+				feedbacks: [],
+			},
+			[`gain_set_p5_ch${channel}`]: {
+				type: 'button',
+				category: `${channelName} Gain`,
+				name: `${channelName} Gain +5 dB`,
+				style: {
+					text: `${channelName}\\nSET +5dB`,
+					size: 'auto',
+					color: combineRgb(0, 0, 0),
+					bgcolor: combineRgb(255, 230, 180),
+				},
+				steps: [
+					{
+						down: [
+							{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: 5 } },
+						],
+						up: [],
+					},
+				],
+				feedbacks: [],
+			},
+
 			// Clip Indicator
 			[`clip_indicator_ch${channel}`]: {
 				type: 'button',

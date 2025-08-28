@@ -15,7 +15,10 @@
 		"probe:udp": "node scripts/canali-udp-probe.mjs",
 		"probe:http-paths": "node scripts/http-paths-probe.mjs",
 		"probe:summarize": "node scripts/summarize-probe.mjs",
-		"probe:map": "node scripts/generate-mapping.mjs"
+		"probe:map": "node scripts/generate-mapping.mjs",
+		"probe:unica": "node scripts/unica-paths-probe.mjs"
+		,
+		"probe:retest-missing": "node scripts/retest-missing-paths.mjs"
 	},
 	"license": "MIT",
 	"repository": {

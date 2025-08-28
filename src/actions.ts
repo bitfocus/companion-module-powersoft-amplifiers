@@ -35,12 +35,23 @@ export function UpdateActions(self: ModuleInstance): void {
 	const deviceChoices = (): { id: string; label: string }[] => {
 		const hosts = listDevices(self.config)
 		const arr = hosts.length > 0 ? hosts : self.config.host ? [self.config.host] : []
-		return arr.map((h) => ({ id: h, label: h }))
+		const list = arr.map((h) => ({ id: h, label: h }))
+		// Add special all-devices option when more than one device is configured
+		return list.length > 1 ? [{ id: '__all__', label: 'All Devices' }, ...list] : list
 	}
+	// Resolve a single URL for legacy single-device actions
 	const resolveUrl = (selected?: string): string => {
 		const host =
-			selected && String(selected).length > 0 ? String(selected) : listDevices(self.config)[0] || self.config.host
+			selected && String(selected).length > 0 && selected !== '__all__'
+				? String(selected)
+				: listDevices(self.config)[0] || self.config.host
 		return getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+	}
+	// Resolve one or many hosts depending on selection
+	const resolveHosts = (selected?: string): string[] => {
+		if (selected === '__all__') return listDevices(self.config)
+		const host = selected && String(selected).length > 0 ? String(selected) : listDevices(self.config)[0] || self.config.host
+		return host ? [host] : []
 	}
 	self.setActionDefinitions({
 		// Power Control
@@ -57,14 +68,17 @@ export function UpdateActions(self: ModuleInstance): void {
 				},
 			],
 			callback: async (action) => {
-				const url = resolveUrl(action.options.device as string)
+				const hosts = resolveHosts(action.options.device as string)
 				const payload = buildAgileRequest({
 					actionType: ActionType.WRITE,
 					valueType: ValueType.BOOL,
 					path: ParameterPaths.DEVICE_STANDBY,
 					value: false, // Standby OFF = Power ON
 				})
-				await postToAmplifier(url, payload, self)
+				for (const host of hosts) {
+					const url = getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+					await postToAmplifier(url, payload, self)
+				}
 			},
 		},
 		powerOff: {
@@ -79,14 +93,17 @@ export function UpdateActions(self: ModuleInstance): void {
 				},
 			],
 			callback: async (action) => {
-				const url = resolveUrl(action.options.device as string)
+				const hosts = resolveHosts(action.options.device as string)
 				const payload = buildAgileRequest({
 					actionType: ActionType.WRITE,
 					valueType: ValueType.BOOL,
 					path: ParameterPaths.DEVICE_STANDBY,
 					value: true, // Standby ON = Power OFF
 				})
-				await postToAmplifier(url, payload, self)
+				for (const host of hosts) {
+					const url = getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+					await postToAmplifier(url, payload, self)
+				}
 			},
 		},
 		togglePower: {
@@ -101,17 +118,20 @@ export function UpdateActions(self: ModuleInstance): void {
 				},
 			],
 			callback: async (action) => {
-				const host = (action.options.device as string) || listDevices(self.config)[0] || self.config.host
-				const id = sanitizeDeviceId(host || '')
-				const current = self.deviceStatusById[id]?.power === true
-				const url = resolveUrl(host)
-				const payload = buildAgileRequest({
-					actionType: ActionType.WRITE,
-					valueType: ValueType.BOOL,
-					path: ParameterPaths.DEVICE_STANDBY,
-					value: current ? true : false, // if currently ON -> standby true (turn off), else standby false (turn on)
-				})
-				await postToAmplifier(url, payload, self)
+				const selected = action.options.device as string
+				const hosts = resolveHosts(selected)
+				for (const host of hosts) {
+					const id = sanitizeDeviceId(host || '')
+					const current = self.deviceStatusById[id]?.power === true
+					const url = getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+					const payload = buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path: ParameterPaths.DEVICE_STANDBY,
+						value: current ? true : false, // if currently ON -> standby true (turn off), else standby false (turn on)
+					})
+					await postToAmplifier(url, payload, self)
+				}
 			},
 		},
 
@@ -139,7 +159,6 @@ export function UpdateActions(self: ModuleInstance): void {
 			],
 			callback: async (action) => {
 				const channel = (action.options.channel as number) - 1
-				const url = resolveUrl(action.options.device as string)
 				const path = ParameterPaths.INPUT_CHANNEL_MUTE.replace('{0}', String(channel))
 				const payload = buildAgileRequest({
 					actionType: ActionType.WRITE,
@@ -147,7 +166,11 @@ export function UpdateActions(self: ModuleInstance): void {
 					path,
 					value: true,
 				})
-				await postToAmplifier(url, payload, self)
+				const hosts = resolveHosts(action.options.device as string)
+				for (const host of hosts) {
+					const url = getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+					await postToAmplifier(url, payload, self)
+				}
 			},
 		},
 		unmuteChannel: {
@@ -173,7 +196,6 @@ export function UpdateActions(self: ModuleInstance): void {
 			],
 			callback: async (action) => {
 				const channel = (action.options.channel as number) - 1
-				const url = resolveUrl(action.options.device as string)
 				const path = ParameterPaths.INPUT_CHANNEL_MUTE.replace('{0}', String(channel))
 				const payload = buildAgileRequest({
 					actionType: ActionType.WRITE,
@@ -181,7 +203,11 @@ export function UpdateActions(self: ModuleInstance): void {
 					path,
 					value: false,
 				})
-				await postToAmplifier(url, payload, self)
+				const hosts = resolveHosts(action.options.device as string)
+				for (const host of hosts) {
+					const url = getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+					await postToAmplifier(url, payload, self)
+				}
 			},
 		},
 		toggleMuteChannel: {
@@ -206,19 +232,22 @@ export function UpdateActions(self: ModuleInstance): void {
 				},
 			],
 			callback: async (action) => {
-				const host = (action.options.device as string) || listDevices(self.config)[0] || self.config.host
-				const id = sanitizeDeviceId(host || '')
+				const selected = action.options.device as string
 				const ch = (action.options.channel as number) - 1
-				const current = self.deviceStatusById[id]?.channels?.[ch]?.mute === true
-				const url = resolveUrl(host)
 				const path = ParameterPaths.INPUT_CHANNEL_MUTE.replace('{0}', String(ch))
-				const payload = buildAgileRequest({
-					actionType: ActionType.WRITE,
-					valueType: ValueType.BOOL,
-					path,
-					value: !current,
-				})
-				await postToAmplifier(url, payload, self)
+				const hosts = resolveHosts(selected)
+				for (const host of hosts) {
+					const id = sanitizeDeviceId(host || '')
+					const current = self.deviceStatusById[id]?.channels?.[ch]?.mute === true
+					const url = getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+					const payload = buildAgileRequest({
+						actionType: ActionType.WRITE,
+						valueType: ValueType.BOOL,
+						path,
+						value: !current,
+					})
+					await postToAmplifier(url, payload, self)
+				}
 			},
 		},
 
@@ -758,42 +787,45 @@ export function UpdateActions(self: ModuleInstance): void {
 				{ type: 'dropdown', id: 'device', label: 'Device', default: deviceChoices()[0]?.id, choices: deviceChoices() },
 			],
 			callback: async (action) => {
-				const url = resolveUrl(action.options.device as string)
+				const hosts = resolveHosts(action.options.device as string)
 				const maxCh = self.config.maxChannels || 8
-				for (let ch = 0; ch < maxCh; ch++) {
-					const gen = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_ENABLE.replace('{0}', String(ch))
-					const imp = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE.replace('{0}', String(ch))
-					const det = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_ENABLE.replace('{0}', String(ch))
-					await postToAmplifier(
-						url,
-						buildAgileRequest({
-							actionType: ActionType.WRITE,
-							valueType: ValueType.BOOL,
-							path: gen,
-							value: false,
-						}),
-						self,
-					)
-					await postToAmplifier(
-						url,
-						buildAgileRequest({
-							actionType: ActionType.WRITE,
-							valueType: ValueType.BOOL,
-							path: imp,
-							value: false,
-						}),
-						self,
-					)
-					await postToAmplifier(
-						url,
-						buildAgileRequest({
-							actionType: ActionType.WRITE,
-							valueType: ValueType.BOOL,
-							path: det,
-							value: false,
-						}),
-						self,
-					)
+				for (const host of hosts) {
+					const url = getAmplifierApiUrl(host, self.config.useHttps, self.config.port)
+					for (let ch = 0; ch < maxCh; ch++) {
+						const gen = ParameterPaths.OUTPUT_SPEAKER_GENERATOR_ENABLE.replace('{0}', String(ch))
+						const imp = ParameterPaths.OUTPUT_SPEAKER_IMPEDANCE_DETECTION_ENABLE.replace('{0}', String(ch))
+						const det = ParameterPaths.OUTPUT_SPEAKER_TONE_DETECTION_ENABLE.replace('{0}', String(ch))
+						await postToAmplifier(
+							url,
+							buildAgileRequest({
+								actionType: ActionType.WRITE,
+								valueType: ValueType.BOOL,
+								path: gen,
+								value: false,
+							}),
+							self,
+						)
+						await postToAmplifier(
+							url,
+							buildAgileRequest({
+								actionType: ActionType.WRITE,
+								valueType: ValueType.BOOL,
+								path: imp,
+								value: false,
+							}),
+							self,
+						)
+						await postToAmplifier(
+							url,
+							buildAgileRequest({
+								actionType: ActionType.WRITE,
+								valueType: ValueType.BOOL,
+								path: det,
+								value: false,
+							}),
+							self,
+						)
+					}
 				}
 			},
 		},

@@ -1,6 +1,12 @@
 import type { ModuleInstance } from './main.js'
 import { listDevices, sanitizeDeviceId } from './devices.js'
 
+// Formatting helpers
+const fmtDb = (v?: number): string => (typeof v === 'number' && isFinite(v) ? v.toFixed(1) : '0.0')
+const fmtTemp = (v?: number): string => (typeof v === 'number' && isFinite(v) ? v.toFixed(1) : '0.0')
+const fmtImp = (v?: number): string => (typeof v === 'number' && isFinite(v) ? v.toFixed(2) : '0.00')
+const fmtPct = (v?: number): string => (typeof v === 'number' && isFinite(v) ? v.toFixed(0) : '0')
+
 export function UpdateVariableDefinitions(self: ModuleInstance): void {
 	const chCount = self.config.maxChannels
 	const hosts = listDevices(self.config)
@@ -21,6 +27,7 @@ export function UpdateVariableDefinitions(self: ModuleInstance): void {
 		for (let i = 0; i < chCount; i++) {
 			const ch = i + 1
 			defs.push(
+				{ variableId: `ch${ch}_name_${id}`, name: `Ch ${ch} Name [${label}]` },
 				{ variableId: `ch${ch}_mute_${id}`, name: `Ch ${ch} Mute [${label}]` },
 				{ variableId: `ch${ch}_gain_${id}`, name: `Ch ${ch} Gain (dB) [${label}]` },
 				{ variableId: `ch${ch}_limiter_threshold_${id}`, name: `Ch ${ch} Limiter Threshold (dB) [${label}]` },
@@ -64,22 +71,23 @@ export function UpdateVariables(self: ModuleInstance): void {
 		variables[`firmware_${id}`] = status.firmware || '0.0.0'
 		variables[`ip_${id}`] = status.ip || label
 		variables[`power_${id}`] = status.power ? 'On' : 'Off'
-		variables[`temperature_${id}`] = status.temp?.toFixed(1) || '0'
-		variables[`fanSpeed_${id}`] = status.fanSpeed?.toFixed(0) || '0'
+		variables[`temperature_${id}`] = fmtTemp(status.temp)
+		variables[`fanSpeed_${id}`] = fmtPct(status.fanSpeed)
 		variables[`error_${id}`] = status.error || 'None'
 		for (let i = 0; i < chCount; i++) {
 			const ch = i + 1
 			const channel = status.channels?.[i] || {}
+			variables[`ch${ch}_name_${id}`] = channel.name || `CH${ch}`
 			variables[`ch${ch}_mute_${id}`] = channel.mute ? 'Muted' : 'Unmuted'
-			variables[`ch${ch}_gain_${id}`] = channel.gain?.toFixed(1) || '0'
+			variables[`ch${ch}_gain_${id}`] = fmtDb(channel.gain)
 			variables[`ch${ch}_limiter_threshold_${id}`] =
 				channel.limiterThreshold !== undefined && channel.limiterThreshold !== null
-					? Number(channel.limiterThreshold).toFixed(1)
+					? fmtDb(Number(channel.limiterThreshold))
 					: 'n/a'
 			variables[`ch${ch}_clip_${id}`] = channel.clip ? 'Clipping' : 'OK'
 			variables[`ch${ch}_signal_${id}`] = channel.signalPresent ? 'Yes' : 'No'
-			variables[`ch${ch}_temp_${id}`] = channel.temp?.toFixed(1) || '0'
-			variables[`ch${ch}_impedance_${id}`] = channel.loadImpedance?.toFixed(2) || '0.00'
+			variables[`ch${ch}_temp_${id}`] = fmtTemp(channel.temp)
+			variables[`ch${ch}_impedance_${id}`] = fmtImp(channel.loadImpedance)
 			const speaker = status.speakers?.[i] || {}
 			variables[`sp${ch}_model_${id}`] = speaker.modelName || 'Unknown'
 			// Only set UDP alarm variables when UDP feedback is enabled

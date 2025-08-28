@@ -88,7 +88,9 @@ export function GetConfigFields(self?: InstanceLike): SomeCompanionConfigField[]
 			width: 8,
 			regex: Regex.HOSTNAME,
 			default: '',
-			required: true,
+			required: false,
+			tooltip:
+				"Optional while scanning: leave empty and select from 'discovered amplifier(s)', or enter a hostname/IP to connect directly.",
 			isVisible: (config) => (config as any).mode !== 'multi',
 		},
 		{
@@ -181,6 +183,7 @@ export function GetConfigFields(self?: InstanceLike): SomeCompanionConfigField[]
 			required: false,
 			tooltip:
 				'Optional: Specify the exact parameter path for power/standby if discovery fails. Example: /Device/ReadOnly/Power/State',
+			isVisible: () => false,
 		},
 		{
 			type: 'checkbox',

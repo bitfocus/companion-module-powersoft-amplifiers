@@ -382,7 +382,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 						for (let ch = 0; ch < chCount; ch++) {
 							const mutePath = ParameterPaths.INPUT_CHANNEL_MUTE.replace('{0}', String(ch))
 							const gainPath = ParameterPaths.INPUT_CHANNEL_GAIN.replace('{0}', String(ch))
-							const limitPath = ParameterPaths.OUTPUT_CHANNEL_PEAK_LIMITER.replace('{0}', String(ch))
+							const limitPath = ParameterPaths.OUTPUT_CHANNEL_PEAK_LIMITER_THRESHOLD_VALUE.replace('{0}', String(ch))
 							try {
 								const [mute, gain, limiter] = await Promise.all([
 									readValue(url, mutePath, ValueType.BOOL),
