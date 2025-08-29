@@ -21,11 +21,13 @@ Control and monitor Powersoft amplifiers via the network API. Supports single or
   - Force answer_port=0 (`udpAnswerPortZero`): For firmware requiring 0.
 
 Notes:
+
 - HTTPS, username, password options exist but are hidden/not required in typical setups.
 
 Compatibility:
+
 - This module has been tested with Powersoft Ottocanali series amplifiers. Other series may work, but paths and features can vary by model and firmware.
- - Live output peak metering paths are not exposed by the HTTP API we target. As a result, the module exposes the Limiter Threshold (dB) per channel instead of a real-time peak meter.
+- Live output peak metering paths are not exposed by the HTTP API we target. As a result, the module exposes the Limiter Threshold (dB) per channel instead of a real-time peak meter.
 
 ## Actions
 
@@ -80,6 +82,7 @@ Compatibility:
 - Speakers: `Speaker <ch> Model` (speaker model name per output channel)
 
 Variable naming:
+
 - All variables are per-device and include a sanitized device identifier suffix (e.g., `name_192_168_1_10`, `sp1_model_192_168_1_10`).
 
 ## Troubleshooting

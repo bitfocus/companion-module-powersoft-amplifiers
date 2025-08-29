@@ -122,9 +122,7 @@ export function UpdatePresets(self: ModuleInstance): CompanionPresetDefinitions 
 				},
 				steps: [
 					{
-						down: [
-							{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: -10 } },
-						],
+						down: [{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: -10 } }],
 						up: [],
 					},
 				],
@@ -142,9 +140,7 @@ export function UpdatePresets(self: ModuleInstance): CompanionPresetDefinitions 
 				},
 				steps: [
 					{
-						down: [
-							{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: 0 } },
-						],
+						down: [{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: 0 } }],
 						up: [],
 					},
 				],
@@ -162,9 +158,7 @@ export function UpdatePresets(self: ModuleInstance): CompanionPresetDefinitions 
 				},
 				steps: [
 					{
-						down: [
-							{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: 5 } },
-						],
+						down: [{ actionId: 'setChannelGain', options: { device: defaultDevice, channel, gain: 5 } }],
 						up: [],
 					},
 				],

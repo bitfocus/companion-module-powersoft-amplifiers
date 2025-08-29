@@ -65,9 +65,7 @@ function getBroadcastAddrs(): string[] {
 				const ip = info.address?.split('.').map((v) => parseInt(v, 10))
 				const mask = (info as any).netmask?.split?.('.')?.map?.((v: string) => parseInt(v, 10))
 				if (!ip || ip.length !== 4 || !mask || mask.length !== 4) continue
-				const bcast = [0, 1, 2, 3]
-					.map((i) => (ip[i] & mask[i]) | (255 ^ mask[i]))
-					.join('.')
+				const bcast = [0, 1, 2, 3].map((i) => (ip[i] & mask[i]) | (255 ^ mask[i])).join('.')
 				addrs.add(bcast)
 			}
 		}
@@ -112,7 +110,7 @@ export function startDiscovery(self: DiscoveryContext): void {
 			serial,
 			options,
 			raw: msg.toString('utf8'),
-		} as FoundDevice
+		}
 		// Verbose lines matching expected probe format
 		try {
 			const rawStr = msg.toString('utf8')
@@ -131,7 +129,7 @@ export function startDiscovery(self: DiscoveryContext): void {
 				self._discUiDebounce = setTimeout(() => {
 					try {
 						const cfg = { ...(self as any).config }
-						;(cfg as any)._discNonce = Date.now()
+						cfg._discNonce = Date.now()
 						self.saveConfig(cfg)
 					} catch {
 						// no-op

@@ -16,30 +16,24 @@ export const ParameterPaths = {
 	GENERATOR_SIGNAL_LEVEL: '/Device/Audio/Presets/Live/Extra/AuxSignalGenerator/Level/Value',
 
 	// Generals - Signal Generator (device-wide)
-	GENERALS_SIGNAL_GENERATOR_ENABLE_VALUE:
-		'/Device/Audio/Presets/Live/Generals/SignalGenerator/Enable/Value',
-	GENERALS_SIGNAL_GENERATOR_GAIN_VALUE:
-		'/Device/Audio/Presets/Live/Generals/SignalGenerator/Gain/Value',
+	GENERALS_SIGNAL_GENERATOR_ENABLE_VALUE: '/Device/Audio/Presets/Live/Generals/SignalGenerator/Enable/Value',
+	GENERALS_SIGNAL_GENERATOR_GAIN_VALUE: '/Device/Audio/Presets/Live/Generals/SignalGenerator/Gain/Value',
 	// Aliases removed: canonical keys include _VALUE per corrected CSV
 
 	// Alias to align with corrected CSV naming
-	GENERALS_LATENCY_COMPENSATION_VALUE:
-		'/Device/Audio/Presets/Live/Generals/LatencyCompensation/Value',
+	GENERALS_LATENCY_COMPENSATION_VALUE: '/Device/Audio/Presets/Live/Generals/LatencyCompensation/Value',
 	// Additional Generals field from CSV
-	GENERALS_LATENCY_COMPENSATION_TYPE:
-		'/Device/Audio/Presets/Live/Generals/LatencyCompensation/Type',
+	GENERALS_LATENCY_COMPENSATION_TYPE: '/Device/Audio/Presets/Live/Generals/LatencyCompensation/Type',
 
 	// Input Process - Channels
 	INPUT_CHANNEL_AUXDELAY: '/Device/Audio/Presets/Live/InputProcess/Channels/Channel-{0}/InDelay/Value',
 	// Input EQ enable (canonical)
-	INPUT_CHANNEL_EQ_ENABLE_VALUE:
-		'/Device/Audio/Presets/Live/InputProcess/Channels/Channel-{0}/InputEQ/Enable/Value',
+	INPUT_CHANNEL_EQ_ENABLE_VALUE: '/Device/Audio/Presets/Live/InputProcess/Channels/Channel-{0}/InputEQ/Enable/Value',
 	// InDelay Enable path (channel-level, canonical)
 	INPUT_PROCESS_CHANNEL_INDELAY_ENABLE_VALUE:
 		'/Device/Audio/Presets/Live/InputProcess/Channels/Channel-{0}/InDelay/Enable/Value',
 	// Input Process - Generals
-	INPUT_PROCESS_MAXCURRENTDRAW_VALUE:
-		'/Device/Audio/Presets/Live/InputProcess/Generals/MaxCurrentDraw/Value',
+	INPUT_PROCESS_MAXCURRENTDRAW_VALUE: '/Device/Audio/Presets/Live/InputProcess/Generals/MaxCurrentDraw/Value',
 
 	INPUT_CHANNEL_EQ_POLARITY: '/Device/Audio/Presets/Live/InputProcess/Channels/Channel-{0}/InPolarity/Value',
 	INPUT_CHANNEL_GAIN: '/Device/Audio/Presets/Live/InputProcess/Channels/Channel-{0}/Gain/Value',
@@ -120,7 +114,6 @@ export const ParameterPaths = {
 	// Source Selection
 	INPUT_SOURCE_AUX_INPUT_ENABLE:
 		'/Device/Audio/Presets/Live/SourceSelection/BackupStrategy/BackupStrategy-0/AuxInput/Value',
-	
 
 	// Matrix
 	MATRIX: '/Device/Audio/Presets/Live/InputMatrix/Channels',
@@ -148,8 +141,7 @@ export const ParameterPaths = {
 
 	INPUT_MATRIX_EXTRA_CONTROL: '/Device/Audio/Presets/Live/InputMatrix/Generals/ExtraControl/Enable/Value',
 	// Alias (clearer): same path as INPUT_MATRIX_EXTRA_CONTROL
-	INPUT_MATRIX_EXTRA_CONTROL_ENABLE_VALUE:
-		'/Device/Audio/Presets/Live/InputMatrix/Generals/ExtraControl/Enable/Value',
+	INPUT_MATRIX_EXTRA_CONTROL_ENABLE_VALUE: '/Device/Audio/Presets/Live/InputMatrix/Generals/ExtraControl/Enable/Value',
 
 	// Speaker Layout
 	SPEAKER_CONNECTIONS: '/Device/Audio/Presets/Live/SpeakerLayout/Connections',
@@ -243,26 +235,17 @@ export const ParameterPaths = {
 		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/PeakLimiter/IIR/IIR-{1}/Type/Value',
 
 	// Output Process - Common channel controls (from CSV)
-	OUTPUT_CHANNEL_BRIDGE_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Bridge/Value',
-	OUTPUT_CHANNEL_OUT_DELAY_ENABLE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/OutDelay/Enable',
-	OUTPUT_CHANNEL_OUT_DELAY_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/OutDelay/Value',
-	OUTPUT_CHANNEL_OUT_POLARITY_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/OutPolarity/Value',
-	OUTPUT_CHANNEL_GAIN_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Gain/Value',
+	OUTPUT_CHANNEL_BRIDGE_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Bridge/Value',
+	OUTPUT_CHANNEL_OUT_DELAY_ENABLE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/OutDelay/Enable',
+	OUTPUT_CHANNEL_OUT_DELAY_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/OutDelay/Value',
+	OUTPUT_CHANNEL_OUT_POLARITY_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/OutPolarity/Value',
+	OUTPUT_CHANNEL_GAIN_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Gain/Value',
 	// Output Process - Channel name
-	OUTPUT_CHANNEL_NAME:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Name',
+	OUTPUT_CHANNEL_NAME: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Name',
 	// Output Process - Feedloop
-	OUTPUT_CHANNEL_FEEDLOOP:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Feedloop',
-	OUTPUT_CHANNEL_FEEDLOOP_ENABLE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Feedloop/Enable',
-	OUTPUT_CHANNEL_FEEDLOOP_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Feedloop/Value',
+	OUTPUT_CHANNEL_FEEDLOOP: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Feedloop',
+	OUTPUT_CHANNEL_FEEDLOOP_ENABLE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Feedloop/Enable',
+	OUTPUT_CHANNEL_FEEDLOOP_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/Feedloop/Value',
 	// Output Process - PilotTone
 	OUTPUT_CHANNEL_PILOT_TONE_ENABLE_VALUE:
 		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/PilotTone/Enable/Value',
@@ -306,18 +289,13 @@ export const ParameterPaths = {
 		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/NominalImpedance/Low/Value',
 
 	// Output Process - IIR block (from CSV)
-	OUTPUT_CHANNEL_IIR_ENABLE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Enable',
-	OUTPUT_CHANNEL_IIR_FC_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Fc/Value',
-	OUTPUT_CHANNEL_IIR_GAIN_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Gain/Value',
-	OUTPUT_CHANNEL_IIR_Q_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Q/Value',
+	OUTPUT_CHANNEL_IIR_ENABLE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Enable',
+	OUTPUT_CHANNEL_IIR_FC_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Fc/Value',
+	OUTPUT_CHANNEL_IIR_GAIN_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Gain/Value',
+	OUTPUT_CHANNEL_IIR_Q_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Q/Value',
 	OUTPUT_CHANNEL_IIR_SLOPE_VALUE:
 		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Slope/Value',
-	OUTPUT_CHANNEL_IIR_TYPE_VALUE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Type/Value',
+	OUTPUT_CHANNEL_IIR_TYPE_VALUE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/IIR/IIR-{1}/Type/Value',
 
 	// Output Process - DynamicEq (from CSV)
 	OUTPUT_CHANNEL_DYNAMICEQ_ENABLE:
@@ -346,10 +324,8 @@ export const ParameterPaths = {
 		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/DynamicEq/DYNAMICEQ-{1}/Threshold/Value',
 
 	// Output Process - FIR (basic)
-	OUTPUT_CHANNEL_FIR_ENABLE:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/FIR/Enable',
-	OUTPUT_CHANNEL_FIR_NTAPS:
-		'/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/FIR/nTaps',
+	OUTPUT_CHANNEL_FIR_ENABLE: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/FIR/Enable',
+	OUTPUT_CHANNEL_FIR_NTAPS: '/Device/Audio/Presets/Live/OutputProcess/Channels/Channel-{0}/FIR/nTaps',
 	OUTPUT_SPEAKER_GENERATOR_ENABLE:
 		'/Device/Audio/Presets/Live/Extra/OutputProcess/Channels/Channel-{0}/AuxLineDiagnostic/ToneGenerator/Enable/Value',
 	OUTPUT_SPEAKER_GENERATOR_FREQUENCY:

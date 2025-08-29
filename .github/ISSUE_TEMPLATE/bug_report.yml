@@ -2,7 +2,7 @@ name: Bug report
 description: Create a bug report to help us improve.
 labels:
   - BUG
-title: "[BUG] "
+title: '[BUG] '
 body:
   - type: checkboxes
     attributes:
@@ -51,7 +51,7 @@ body:
           - **Companion Version**: 2.2.0-b177f8fb-3722
           - **Module Version**: 1.0.0
           - **Powersoft Firmware Version**: 1.12.0.84
-          - **Powersoft Model**: Quattrocanali 8804 DSP+D 
+          - **Powersoft Model**: Quattrocanali 8804 DSP+D
       value: |
         - OS: 
         - Browser: 

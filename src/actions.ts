@@ -50,7 +50,8 @@ export function UpdateActions(self: ModuleInstance): void {
 	// Resolve one or many hosts depending on selection
 	const resolveHosts = (selected?: string): string[] => {
 		if (selected === '__all__') return listDevices(self.config)
-		const host = selected && String(selected).length > 0 ? String(selected) : listDevices(self.config)[0] || self.config.host
+		const host =
+			selected && String(selected).length > 0 ? String(selected) : listDevices(self.config)[0] || self.config.host
 		return host ? [host] : []
 	}
 	self.setActionDefinitions({
