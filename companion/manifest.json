@@ -3,14 +3,14 @@
 	"name": "Powersoft Amplifier",
 	"shortname": "Powersoft",
 	"description": "Control and monitor Powersoft amplifiers via network",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "MIT",
-	"repository": "git+https://github.com/dewiweb/companion-module-powersoft-amplifier.git",
-	"bugs": "https://github.com/dewiweb/companion-module-powersoft-amplifier/issues",
+	"repository": "git+https://github.com/bitfocus/companion-module-powersoft-amplifier.git",
+	"bugs": "https://github.com/bitfocus/companion-module-powersoft-amplifier/issues",
 	"maintainers": [
 		{
 			"name": "dewiweb",
-			"email": ""
+			"email": "dewiweb@gmail.com"
 		}
 	],
 	"runtime": {

@@ -1,6 +1,6 @@
 {
 	"name": "powersoft-amplifier",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"main": "dist/main.js",
 		"scripts": {
 		"postinstall": "husky",
@@ -20,7 +20,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/dewiweb/companion-module-powersoft-amplifier.git"
+		"url": "git+https://github.com/bitfocus/companion-module-powersoft-amplifier.git"
 	},
 	"engines": {
 		"node": "^22.14",
