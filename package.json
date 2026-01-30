@@ -2,7 +2,7 @@
 	"name": "powersoft-amplifier",
 	"version": "1.0.1",
 	"main": "dist/main.js",
-		"scripts": {
+	"scripts": {
 		"postinstall": "husky",
 		"format": "prettier -w .",
 		"package": "run build && companion-module-build",
@@ -31,7 +31,7 @@
 		"got": "^14.4.7"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.3.0",
+		"@companion-module/tools": "^2.6.1",
 		"@types/node": "^22.14.1",
 		"@types/ws": "^8.18.1",
 		"eslint": "^9.24.0",
